@@ -5,7 +5,7 @@ This document provides guidance for working on the Ember & Roast project.
 ## Project Context
 
 **What:** A Sierra.AI interview showcase project demonstrating:
-- Multi-agent AI team (CrewAI) building an e-commerce platform
+- Multi-agent AI team (Claude Code agents) building an e-commerce platform
 - Professional DevOps (GitHub Actions, Jira, GCP)
 - Voice-first customer service with multi-channel support
 - Cloud infrastructure on Firebase/Firestore
@@ -18,7 +18,7 @@ This document provides guidance for working on the Ember & Roast project.
 
 ## Current Status
 
-- ✅ Phase 1: Project Infrastructure (Git, Next.js, Firebase, GitHub Actions, CrewAI setup)
+- ✅ Phase 1: Project Infrastructure (Git, Next.js, Firebase, GitHub Actions, Claude Code agents setup)
 - 🔄 Phase 2-7: In progress
 
 ## Key Files & Directories
@@ -42,12 +42,12 @@ This document provides guidance for working on the Ember & Roast project.
   - Detects escalation triggers
   - Returns natural, warm responses
 
-**Phase 5: CrewAI Dev Team** (Days 10-11)
-- `crew/crew.py` - Orchestrates 4-agent team
-- `crew/config/agents.yaml` - Agent definitions
-- `crew/config/tasks.yaml` - Task definitions
-- `crew/tools/jira_tool.py` - Jira API integration
-- `crew/tools/github_tool.py` - GitHub API integration
+**Phase 5: Claude Code Agent Dev Team** (Days 10-11)
+- `.claude/agents/product-manager.md` - PM agent definition
+- `.claude/agents/ui-designer.md` - Designer agent definition
+- `.claude/agents/backend-engineer.md` - BE agent definition
+- `.claude/agents/frontend-engineer.md` - FE agent definition
+- Agents invoked sequentially via Claude Code's Agent tool
 
 ### Documentation Stubs
 
@@ -72,7 +72,7 @@ These files exist but need content:
 - **Voice CS**: Retell.ai
 - **Webchat CS**: Voiceflow
 - **Email CS**: Resend
-- **Dev Team**: CrewAI, Python
+- **Dev Team**: Claude Code custom agents (`.claude/agents/`)
 - **CI/CD**: GitHub Actions
 - **Project Mgmt**: Jira Cloud
 - **Hosting**: Firebase Hosting
@@ -134,7 +134,7 @@ When discussing with Sierra:
 
 2. **Empathy**: "The AI knows its limits and hands off gracefully. When frustration is detected, it doesn't keep trying—it escalates with full context preserved so the customer never repeats themselves."
 
-3. **Team Simulation**: "The CrewAI agents show how AI can multiply engineering capacity. The PM defines requirements, designer creates specs, and engineers build—all driven by the same platform."
+3. **Team Simulation**: "The 4-agent Claude Code team shows how AI can multiply engineering capacity. The PM defines requirements, designer creates specs, and engineers build—all driven by Claude Code agents."
 
 4. **Professionalism**: "GitHub CI/CD, Jira board, proper infrastructure—this should look like a real product team, not a hobby project."
 
