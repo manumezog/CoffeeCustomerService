@@ -1,0 +1,90 @@
+[
+  {
+    "id": "1",
+    "name": "Ethiopian Yirgacheffe",
+    "type": "Single Origin",
+    "price": 18.99,
+    "description": "Bright, floral, citrus notes. Light roast.",
+    "roastLevel": "light",
+    "origin": "Ethiopia",
+    "notes": ["Citrus", "Floral", "Tea-like"],
+    "image": "/products/ethiopian.jpg"
+  },
+  {
+    "id": "2",
+    "name": "Colombian Supremo",
+    "type": "Single Origin",
+    "price": 16.99,
+    "description": "Caramel, nutty, balanced. Medium roast.",
+    "roastLevel": "medium",
+    "origin": "Colombia",
+    "notes": ["Caramel", "Walnut", "Balanced"],
+    "image": "/products/colombian.jpg"
+  },
+  {
+    "id": "3",
+    "name": "Sumatra Mandheling",
+    "type": "Single Origin",
+    "price": 17.99,
+    "description": "Earthy, full body, low acidity. Dark roast.",
+    "roastLevel": "dark",
+    "origin": "Indonesia",
+    "notes": ["Earthy", "Full Body", "Spicy"],
+    "image": "/products/sumatra.jpg"
+  },
+  {
+    "id": "4",
+    "name": "Ember Blend",
+    "type": "House Blend",
+    "price": 15.99,
+    "description": "Our signature. Chocolate, cherry, smooth. Medium.",
+    "roastLevel": "medium",
+    "origin": "Various",
+    "notes": ["Chocolate", "Cherry", "Smooth"],
+    "image": "/products/ember-blend.jpg"
+  },
+  {
+    "id": "5",
+    "name": "Roastmaster's Reserve",
+    "type": "Limited Edition",
+    "price": 24.99,
+    "description": "Monthly rotating micro-lot. Currently: Panama Geisha.",
+    "roastLevel": "light",
+    "origin": "Panama",
+    "notes": ["Floral", "Jasmine", "Complex"],
+    "image": "/products/reserve.jpg"
+  },
+  {
+    "id": "6",
+    "name": "Cold Brew Kit",
+    "type": "Bundle",
+    "price": 29.99,
+    "description": "1lb coarse grind + brewing guide + mason jar.",
+    "roastLevel": "medium",
+    "origin": "Various",
+    "notes": ["Bundle", "Convenient", "Includes Guide"],
+    "image": "/products/cold-brew.jpg"
+  },
+  {
+    "id": "7",
+    "name": "Espresso Starter",
+    "type": "Bundle",
+    "price": 22.99,
+    "description": "1lb fine grind + tamper + dosing guide.",
+    "roastLevel": "dark",
+    "origin": "Various",
+    "notes": ["Bundle", "Espresso", "Beginner-Friendly"],
+    "image": "/products/espresso.jpg"
+  },
+  {
+    "id": "8",
+    "name": "Gift Subscription",
+    "type": "Subscription",
+    "price": 49.99,
+    "description": "2 bags monthly, curated by our roastmaster.",
+    "roastLevel": "medium",
+    "origin": "Various",
+    "notes": ["Subscription", "Curated", "Monthly"],
+    "image": "/products/subscription.jpg"
+  }
+]

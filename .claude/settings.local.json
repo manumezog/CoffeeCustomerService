@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npx create-next-app@latest shop --typescript --tailwind --no-eslint --no-git --import-alias=@ --src-dir)",
+      "Bash(npx create-next-app@latest shop --typescript --tailwind --eslint --no-git --import-alias=@ --src-dir)",
+      "Bash(npm install:*)"
+    ]
+  }
+}
