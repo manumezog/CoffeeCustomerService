@@ -26,6 +26,7 @@ interface RetellRequest {
 export async function POST(req: Request) {
   try {
     const body = await req.json() as RetellRequest
+    console.log('[retell] interaction_type:', body.interaction_type, '| transcript length:', body.transcript?.length ?? 0)
 
     // Retell health check
     if (body.interaction_type === 'ping_pong') {
@@ -62,6 +63,7 @@ export async function POST(req: Request) {
     // When escalation is needed, deliver the empathetic handoff message
     // but do NOT end the call — Retell handles transfer via agent config.
     // Setting end_call:true would hang up instead of transferring.
+    console.log('[retell] responding with:', result.response)
     return Response.json({
       response_type: 'response',
       response_id: body.response_id,
@@ -69,7 +71,8 @@ export async function POST(req: Request) {
       content_complete: true,
       end_call: false,
     })
-  } catch {
+  } catch (err) {
+    console.error('[retell] ERROR:', err)
     return Response.json({
       response_type: 'response',
       response_id: 0,
