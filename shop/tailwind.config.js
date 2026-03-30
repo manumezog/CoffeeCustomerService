@@ -8,8 +8,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'ember': '#8B4513',
-        'roast': '#3E2723',
+        'ember': '#c2410c',
+        'ember-dark': '#b83b0a',
+        'roast': '#3b1f0e',
+        'roast-light': '#6D4C41',
+        'cream': '#FAF8F3',
+        'honey': '#D4A96A',
+        'success': '#4CAF50',
+        'error': '#F44336',
+      },
+      fontFamily: {
+        heading: ['Playfair Display', 'Georgia', 'serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'monospace'],
       },
     },
   },

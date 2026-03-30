@@ -69,7 +69,7 @@ export default function AdminPage() {
       <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-roast">Escalation Dashboard</h1>
+            <h1 className="text-3xl font-bold text-roast font-heading">Escalation Dashboard</h1>
             <p className="text-gray-500 mt-1">Open escalations requiring human attention</p>
           </div>
           <div className="bg-red-100 text-red-800 px-4 py-2 rounded-full font-semibold text-lg">

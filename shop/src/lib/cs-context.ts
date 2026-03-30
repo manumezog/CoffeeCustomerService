@@ -44,9 +44,17 @@ export interface ContextPackage {
 
 // ── Escalation Rules ─────────────────────────────────────────────────────────
 
-const ESCALATION_RULES = [
-  { check: (s: number) => s < 0.3,          reason: 'Customer frustration detected' },
-  { check: (_: number, r?: number) => (r ?? 0) > 50, reason: 'High-value refund requires approval' },
+interface EscalationRule {
+  check: (sentiment: number, refundAmount?: number, historyLen?: number) => boolean
+  reason: string
+}
+
+const ESCALATION_RULES: EscalationRule[] = [
+  { check: (s) => s < 0.3,                                 reason: 'Customer frustration detected' },
+  { check: (_s, r) => (r ?? 0) > 50,                       reason: 'High-value refund requires approval' },
+  // Rule 3: conversation has exceeded 6 turns (3 back-and-forth exchanges)
+  // without resolution — indicates a recurring or complex issue.
+  { check: (_s, _r, h) => (h ?? 0) > 6,                    reason: 'Recurring issue — multiple turns without resolution' },
 ]
 
 const EXPLICIT_ESCALATION_PHRASES = [
@@ -213,14 +221,16 @@ export async function csContext(input: CsInput): Promise<CsOutput> {
   // 5. Check escalation
   const explicitEscalation = EXPLICIT_ESCALATION_PHRASES.some(p => message.toLowerCase().includes(p))
   const refundAmount = order?.total ?? 0
-  const sentimentEscalation = ESCALATION_RULES[0].check(sentiment)
-  const valueEscalation = ESCALATION_RULES[1].check(sentiment, refundAmount)
+  const sentimentEscalation = ESCALATION_RULES[0].check(sentiment, refundAmount, conversationHistory.length)
+  const valueEscalation = ESCALATION_RULES[1].check(sentiment, refundAmount, conversationHistory.length)
+  const repeatContactEscalation = ESCALATION_RULES[2].check(sentiment, refundAmount, conversationHistory.length)
 
-  const escalationNeeded = explicitEscalation || sentimentEscalation || valueEscalation
+  const escalationNeeded = explicitEscalation || sentimentEscalation || valueEscalation || repeatContactEscalation
   let escalationReason: string | undefined
   if (explicitEscalation) escalationReason = 'Customer requested human agent'
   else if (sentimentEscalation) escalationReason = 'Customer frustration detected'
   else if (valueEscalation) escalationReason = `High-value refund: $${refundAmount.toFixed(2)}`
+  else if (repeatContactEscalation) escalationReason = 'Recurring issue — multiple turns without resolution'
 
   // 6. Generate response
   const { response: baseResponse, actions } = generateResponse(intent, channel, order, message, sentiment)

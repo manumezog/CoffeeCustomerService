@@ -59,12 +59,15 @@ export async function POST(req: Request) {
       customerEmail,
     })
 
+    // When escalation is needed, deliver the empathetic handoff message
+    // but do NOT end the call — Retell handles transfer via agent config.
+    // Setting end_call:true would hang up instead of transferring.
     return Response.json({
       response_type: 'response',
       response_id: body.response_id,
       content: result.response,
       content_complete: true,
-      end_call: result.escalationNeeded,
+      end_call: false,
     })
   } catch {
     return Response.json({
