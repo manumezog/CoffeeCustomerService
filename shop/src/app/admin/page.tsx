@@ -54,12 +54,14 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState<string | null>(null)
   const [updating, setUpdating] = useState<string | null>(null)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const fetchEscalations = useCallback(async () => {
     try {
       const res = await fetch('/api/cs/escalation')
       const json = await res.json()
       if (json.data) setEscalations(json.data)
+      setLastUpdated(new Date())
     } finally {
       setLoading(false)
     }
@@ -67,7 +69,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchEscalations()
-    const interval = setInterval(fetchEscalations, 30000)
+    const interval = setInterval(fetchEscalations, 5000)
     return () => clearInterval(interval)
   }, [fetchEscalations])
 
@@ -93,8 +95,15 @@ export default function AdminPage() {
             <h1 className="text-3xl font-bold text-roast font-heading">Escalation Dashboard</h1>
             <p className="text-gray-500 mt-1">Open escalations requiring human attention</p>
           </div>
-          <div className="bg-red-100 text-red-800 px-4 py-2 rounded-full font-semibold text-lg">
-            {escalations.length} open
+          <div className="flex flex-col items-end gap-1">
+            <div className="bg-red-100 text-red-800 px-4 py-2 rounded-full font-semibold text-lg">
+              {escalations.length} open
+            </div>
+            {lastUpdated && (
+              <span className="text-xs text-gray-400">
+                Updated {lastUpdated.toLocaleTimeString()}
+              </span>
+            )}
           </div>
         </div>
 
