@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Inter } from 'next/font/google'
 import './globals.css'
 import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
 import VoiceflowWidget from '@/components/VoiceflowWidget'
 
 const playfair = Playfair_Display({
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body>
         <Nav />
         {children}
+        <Footer />
         <VoiceflowWidget />
       </body>
     </html>

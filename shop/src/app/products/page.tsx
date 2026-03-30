@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import products from '@/data/products.json'
 
 export default function ProductsPage() {
@@ -15,7 +16,9 @@ export default function ProductsPage() {
                   <path d="M2 21v-2h2V3h16v16h2v2H2zm4-2h12V5H6v14zm2-2h2v-2H8v2zm4 0h2v-2h-2v2zm-4-4h2v-2H8v2zm4 0h2v-2h-2v2zm-4-4h2V7H8v2zm4 0h2V7h-2v2z"/>
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-roast mb-2 font-heading">{product.name}</h2>
+              <Link href={'/products/' + product.id} className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honey rounded">
+                <h2 className="text-xl font-bold text-roast mb-2 font-heading">{product.name}</h2>
+              </Link>
               <p className="text-sm text-amber-700 mb-2">{product.type}</p>
               <p className="text-gray-700 text-sm mb-4">{product.description}</p>
               <div className="flex justify-between items-center">
