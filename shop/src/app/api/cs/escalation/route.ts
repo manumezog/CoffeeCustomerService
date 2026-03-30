@@ -1,4 +1,4 @@
-import { getEscalations, updateEscalationStatus } from '@/lib/firestore'
+import { getEscalations, updateEscalationStatus, createEscalation } from '@/lib/firestore'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,6 +8,40 @@ export async function GET() {
     return Response.json({ data: escalations, error: null })
   } catch {
     return Response.json({ data: null, error: 'Failed to fetch escalations' }, { status: 500 })
+  }
+}
+
+// Called by Retell as a function tool when the agent decides to escalate
+export async function POST(req: Request) {
+  try {
+    const body = await req.json() as {
+      args?: {
+        reason?: string
+        customer_name?: string
+        order_id?: string
+        transcript_summary?: string
+      }
+    }
+    const args = body.args ?? {}
+
+    await createEscalation({
+      interactionId: 'retell-voice',
+      channel: 'voice',
+      customerName: args.customer_name,
+      orderId: args.order_id?.toUpperCase(),
+      reason: args.reason ?? 'Customer requested human agent',
+      sentiment: 0.2,
+      transcript: args.transcript_summary ?? 'Voice call escalation',
+      recommendedAction: args.order_id
+        ? `Review order ${args.order_id.toUpperCase()} — customer requested human support`
+        : 'Customer requested human support on voice call',
+      status: 'open',
+    })
+
+    return Response.json({ result: 'Escalation recorded. A human agent will follow up shortly.' })
+  } catch (err) {
+    console.error('[escalation] POST error:', err)
+    return Response.json({ result: 'Escalation noted. Our team will be in touch.' })
   }
 }
 
