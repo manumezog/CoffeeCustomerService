@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Nav from '@/components/Nav'
+import VoiceflowWidget from '@/components/VoiceflowWidget'
 
 export const metadata: Metadata = {
   title: 'Ember & Roast - Specialty Coffee',
@@ -14,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Nav />
         {children}
+        <VoiceflowWidget />
       </body>
     </html>
   )

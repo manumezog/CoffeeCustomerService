@@ -209,21 +209,23 @@ Sierra isn't just building AI that serves customers. It's exploring how AI can h
 
 ### How This Project Demonstrates It
 
-**The CrewAI Team:**
-The development team is itself powered by AI agents:
-- PM agent writes requirements
-- Designer agent creates specifications
-- Backend engineer agent builds APIs
-- Frontend engineer agent implements pages
+**The Claude Code Agent Dev Team:**
+The development team is itself powered by AI agents defined in `.claude/agents/`:
+- **PM agent** — writes requirements and Jira stories
+- **UI Designer agent** — creates design system and component specs
+- **Backend Engineer agent** — builds APIs, Firestore layer, cs-context.ts
+- **Frontend Engineer agent** — implements components and pages
+
+Each agent is a specialized system prompt invoked via Claude Code's Agent tool with its own role, domain knowledge, and constraints.
 
 **This demonstrates understanding of:**
-1. **AI amplifies engineering** - One person can oversee 4 agents working in parallel
-2. **Specialization works** - Each agent has a distinct role with appropriate expertise
-3. **Collaboration at scale** - Agents pass outputs to each other (specs → implementation)
-4. **Professional standards for AI-generated work** - Output goes through Jira, GitHub, CI/CD
+1. **AI amplifies engineering** — One engineer can direct 4 specialized agents
+2. **Specialization works** — Distinct roles, constraints, and tool access per agent
+3. **Professional standards** — Output goes through Jira, GitHub CI/CD — not ad-hoc scripts
+4. **Meta-level thinking** — Using AI agents to build AI customer service systems
 
 **Why this matters to Sierra:**
-If Sierra is building the infrastructure for AI customer service, it's natural to ask: "Can we use this infrastructure to build other AI systems?" The answer in this project is yes.
+If Sierra is building AI customer service infrastructure, the logical question is: can AI agents build and maintain that infrastructure too? This project shows yes — and demonstrates how to structure agent roles, handoffs, and guardrails for a real engineering workflow.
 
 ## Bringing It All Together
 

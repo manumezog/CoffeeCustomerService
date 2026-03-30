@@ -1,274 +1,174 @@
-# Ember & Roast - Demo Script for Interview
+# Demo Script — Ember & Roast for Sierra.AI Interview
 
-This is the step-by-step walkthrough for demoing the project to Sierra.AI interviewers.
+**Duration:** 20–30 minutes
+**Goal:** Show voice-first AI customer service with multi-channel consistency, empathetic escalation, and professional engineering practices.
 
-**Duration**: ~20-30 minutes (adjust based on interviewer interest)
+---
 
-## Setup Before Demo
+## Pre-Demo Checklist
 
-- [ ] Book a laptop with good internet
-- [ ] Have the Vercel/Firebase URL open and tested
-- [ ] Test the voice agent with headphones (Retell.ai requires audio)
-- [ ] Have Jira board open in a separate window/tab
-- [ ] Have GitHub repo open in a separate window/tab
-- [ ] Have this script handy for reference
-- [ ] Record a backup video as fallback (especially for voice demo)
-- [ ] Have a few order IDs memorized: ER-10042, ER-10038, ER-10045, ER-10031
+- [ ] Shop running locally (`cd shop && npm run dev`) or live on Firebase
+- [ ] Retell agent configured with webhook URL (or ngrok tunnel running)
+- [ ] `.env.local` has `NEXT_PUBLIC_RETELL_AGENT_ID` and `RETELL_API_KEY_PRIVATE`
+- [ ] Headphones ready — Retell voice requires audio
+- [ ] Jira EMBER board open in a tab (if set up)
+- [ ] GitHub repo open in a tab
+- [ ] Order IDs memorized: **ER-10042** (shipped), **ER-10031** (return requested), **ER-10050** (delivered)
+- [ ] Backup video recorded as fallback for the voice demo
 
-## Demo Narrative
+---
 
-### Part 1: Context & Architecture (3-5 min)
+## Part 1: Context (2–3 min)
 
-**Start with the big picture.**
+Open the architecture diagram and set the scene:
 
-*"This project demonstrates how AI can solve customer service challenges while maintaining human oversight and empathy. It's built for Sierra.AI specifically—a company that understands voice-first customer service."*
+> *"This project is built specifically for Sierra.AI. It demonstrates the three things I think matter most in modern customer service AI: voice-first design, multi-channel consistency, and graceful human handoff.*
+>
+> *The architecture has three layers: a Claude Code AI dev team that built the shop, Firebase cloud infrastructure, and a customer service layer with voice, webchat, and email — all sharing a single brain."*
 
-Show the architecture diagram (use the one in README or docs/architecture.md):
+---
 
-*"The project has three layers:*
-- *Development layer (AI agents building the shop)*
-- *Cloud infrastructure (Firebase, Firestore)*
-- *Customer service layer (voice, webchat, email)"*
+## Part 2: Professional Infrastructure (2–3 min)
 
-### Part 2: Professional Infrastructure (2-3 min)
+**GitHub first:**
 
-**Show Jira board first (if available)**
+> *"Every feature shipped through a real CI/CD pipeline. On every PR: lint, type check, build. On merge to main: deploy to Firebase Hosting. That's not a demo setup — that's production workflow."*
 
-Open the Jira EMBER project in a browser tab:
+Show the Actions tab → green pipeline runs.
 
-*"Let's start with how a real team would organize this work. This is the Jira board where the development team tracks their work."*
+**Jira (if set up):**
 
-Highlight:
-- **Epics** at the top: "Product Catalog", "Customer Service Layer", "Voice Agent"
-- **Sprint board** showing task flow
-- **Agent comments** on tickets showing what each agent worked on
+> *"The dev team — four Claude Code agents playing PM, Designer, Backend Engineer, and Frontend Engineer — tracked their work in Jira. The PM wrote epics and user stories. The engineers created branches, wrote code, and moved tickets through the board. Exactly how a real team operates."*
 
-*"Notice that each agent is assigned tasks matching their role. The PM creates epics and stories, the designers take UI stories, engineers pick up backend and frontend work."*
+---
 
-### Part 3: GitHub Repository (1-2 min)
+## Part 3: The Shop (3–4 min)
 
-*"The code lives in GitHub with professional CI/CD practices."*
+Open the shop homepage.
 
-Open the GitHub repo:
-- Click **Actions** tab
-  - *"See the CI pipeline? On every PR, we lint and type-check. On merge, we build and deploy to Firebase."*
-- Click **Pull Requests** tab
-  - *"Each PR is linked to a Jira ticket (EMBER-###). The agents create feature branches and open PRs."*
-  - *"This is not automated—the agents are actually engaging with real development tools."*
+> *"Ember & Roast is a specialty coffee roaster. The brand is warm, artisanal, premium. Every design decision was made by the UI Designer agent following a real design system."*
 
-### Part 4: The Shop (3-5 min)
+**Browse Products:**
 
-*"Now let's see what was actually built. This is Ember & Roast—a specialty coffee roaster with premium positioning."*
+> *"Eight specialty coffees — Ethiopian Yirgacheffe, Colombian Supremo, Sumatra Mandheling, and more. Each with origin, roast level, and tasting notes. The kind of detail that builds trust with specialty coffee customers."*
 
-Open the live shop:
+**Track Order — try ER-10042:**
 
-#### 4a. Homepage
-Scroll the homepage:
-- Hero section with brand story
-- Featured products
-- Call-to-action buttons
+> *"This is one of the core CS scenarios. The customer types their order ID and immediately sees status, carrier, tracking number, estimated delivery, and items. The same data the voice agent and webchat will use — it all comes from the same Firestore backend."*
 
-*"The design feels warm and artisanal. That's intentional. Coffee customers want to feel the craft."*
+Try **ER-10031**:
 
-#### 4b. Product Catalog
-Click **Browse Products**:
+> *"This order has a return requested. The system knows the state. When the voice agent handles a return for this order, it checks the 30-day window, processes it, and offers refund or store credit — no human needed unless the value is over $50."*
 
-*"Here's the full catalog. 8 specialty coffees from around the world. Notice each one has origin, roast level, tasting notes. This is the kind of detail that makes specialty coffee customers trust you."*
+---
 
-Point out:
-- Product cards with images, names, prices
-- Responsive design (mention it works on mobile)
-- Pricing from $16-25 for single-origin, bundles, subscriptions
+## Part 4: Webchat (2–3 min)
 
-#### 4c. Order Tracking
-Click **Track Order**:
+*(Skip this section if Voiceflow project ID not yet configured.)*
 
-*"One of the key customer service features. Let me look up an order: ER-10042"*
+Click the Voiceflow chat widget (bottom-right):
 
-Type in the order ID and search:
+> *"The webchat is powered by Voiceflow, embedded directly on the shop. But it's not a dumb FAQ bot — every message routes through the same `cs-context.ts` backend the voice agent uses. Consistent answers, regardless of channel."*
 
-*"Here we see:*
-- *Order status (shipped)*
-- *Tracking number and carrier*
-- *Order date and estimated delivery*
-- *All items with prices*
+Try the escalation scenario:
+- Type: *"I'm really frustrated, my order has been sitting for two weeks"*
 
-*This same data is available through the voice agent, the webchat, and email. That's the key insight: all channels access the same backend."*
+> *"Watch the sentiment detection trigger. The AI doesn't keep trying to help — it recognizes frustration below the threshold and escalates immediately. That's intentional."*
 
-Try another order (ER-10031 with "return_requested" status):
+---
 
-*"This order has a return requested. The system knows the customer's intent and can automatically process it or escalate if needed."*
+## Part 5: Voice Agent — The Showstopper (8–10 min) ⭐
 
-### Part 5: Customer Service - Webchat Demo (3-5 min)
+Click the **"Call Us"** button on the homepage.
 
-**This is the polished, easier demo. Do this one first.**
+> *"This is what Sierra.AI does. A customer can call from the website — no phone number needed — and talk to an AI that knows their orders, knows the policies, and knows when to hand off."*
 
-Look for the **Voiceflow webchat widget** at the bottom-right of the shop (if implemented):
-
-*"This is the webchat powered by Voiceflow. It's embedded right on the shop, available 24/7. Let me interact with it."*
-
-Click the chat widget and try:
-
-**Interaction 1: Order Lookup**
-- Type: "What's the status of my order ER-10042?"
-- Expected response: Agent should look up the order and provide tracking info
-
-**Interaction 2: Product Question**
-- Type: "What's the difference between the Ethiopian and the Colombian?"
-- Expected response: Agent should use knowledge base to compare flavor profiles
-
-**Interaction 3: Return Request**
-- Type: "I'd like to return an order"
-- Expected response: Agent should explain return policy and ask for order ID
-
-**Interaction 4: Escalation**
-- Type: "This coffee tastes stale and I'm really upset" (express frustration)
-- Expected response: Agent should recognize frustration and offer escalation to human
-
-*"Notice the transitions. The AI is helpful and warm, but when it detects frustration, it doesn't keep trying—it escalates. That's empathy."*
-
-### Part 6: Customer Service - Voice Demo (5-10 min) ⭐ THE SHOWSTOPPER
-
-**This is the impressive part. Have a backup video ready in case of issues.**
-
-*"Now the star of the show: voice customer service. This is what Sierra.AI does. Let me call the system."*
-
-Click the **"Call Us"** button (Retell.ai Web SDK):
-
-*"The browser will open a call interface. I can literally call the AI agent from the website."*
-
-**Have a real conversation** (be natural, don't script it too much):
+**Conversation flow:**
 
 ```
-You: "Hi, I'd like to check on my order"
-Agent: [Responds warmly, asks which order]
-You: "Order number ER-10042"
-Agent: [Looks up order, provides tracking info, estimated delivery]
-You: "Actually, I need to return it. Can you help with that?"
-Agent: [Checks return window, processes return, confirms]
-You: [Try expressing mild frustration about delivery time]
-Agent: [Acknowledges, escalates with context preserved]
+You:    "Hi, I need to check on my order"
+Agent:  [Warm greeting, asks for order number]
+You:    "It's ER-10042"
+Agent:  [Looks up order, gives status — shipped, tracking, ETA]
+You:    "Actually I want to return it"
+Agent:  [Checks 30-day window, confirms eligible, offers refund or store credit]
+You:    "This is ridiculous, I've been waiting forever" [express frustration]
+Agent:  [Detects frustration → escalates immediately with empathetic message]
 ```
 
-*Key moments to highlight:*
-- The voice is warm and conversational, not robotic
-- The agent handles context switching (order → tracking → return) smoothly
-- Sentiment detection triggers escalation
-- When escalating, it promises full context will be preserved
+Key moments to call out:
+- **Voice quality** — conversational, not robotic
+- **Context switching** — moves from order lookup to return without losing context
+- **Escalation message** — warm, reassuring, promises context is preserved
+- **No repetition** — the human agent will see everything
 
-**If voice agent has issues**, play the backup video instead:
+---
 
-*"Let me show you a recording of the voice interaction in action..."*
+## Part 6: Admin Escalation Dashboard (2 min)
 
-### Part 7: Admin Dashboard - Escalation Queue (2 min)
+Open `/admin`:
 
-If implemented, show the `/admin` escalation dashboard:
+> *"When a conversation escalates, it appears here in real time. The human agent sees: who the customer is, which order, the full transcript, sentiment score, why it escalated, and a recommended action.*
+>
+> *The customer never repeats themselves. That's not a nice-to-have — it's the entire point."*
 
-*"When an interaction escalates, it appears here with full context: customer name, order info, conversation transcript, why it escalated."*
+Click **View transcript** on an escalation to show the full conversation.
 
-*"The human agent can see everything the AI saw. No need for the customer to repeat themselves."*
+---
 
-### Part 8: Behind-the-Scenes - CrewAI Dev Team (2-3 min)
+## Part 7: The Architecture Behind It (2 min)
 
-*"Here's the meta part: this entire shop was built by AI agents."*
+> *"The reason all three channels — voice, chat, email — give consistent answers is this file: `cs-context.ts`. It's about 250 lines. It does sentiment analysis, intent detection, order lookups, return eligibility checks, escalation logic, and response generation. Voice gets short responses. Email gets formal ones. But the logic is identical.*
+>
+> *This is the architectural decision I'm most proud of. It means a customer who called yesterday, chats today, and emails tomorrow gets consistent answers — and a human agent who picks up an escalation has the full picture."*
 
-Show the CrewAI directory structure and explain:
+---
 
-*"The crew has 4 agents:*
-- *PM writes requirements and user stories*
-- *Designer creates design system and layouts*
-- *Backend engineer builds APIs and data models*
-- *Frontend engineer implements components and pages"*
+## Q&A — Key Talking Points
 
-Run the crew (or show output from a previous run):
+**"How does the voice agent know what I ordered?"**
+> *"Retell sends the conversation transcript to our webhook on every turn. We parse out the order ID, hit Firestore, and return the data in the response. Retell speaks it. Total latency under 500ms."*
 
-```bash
-cd crew
-python main.py
-```
+**"What happens when the AI is wrong?"**
+> *"It escalates. The escalation rules are deterministic — sentiment below 0.3, refund over $50, or the customer asks for a human. The AI doesn't guess at the edge cases. It hands off with full context."*
 
-*"Watch as the agents work together. The PM's output becomes input for the designer. The designer's specs guide the engineers. It's like watching a real team collaborate."*
+**"Why voice specifically?"**
+> *"Voice is the hardest channel to get right and the most impactful. Typing is slow. Voice is natural. For emotional situations — a missing order, a damaged package — voice builds trust faster than chat. Sierra gets this. That's why it's the showstopper here."*
 
-Point out the outputs:
-- `docs/product_requirements.md` - PM's work
-- `docs/design_system.md` - Designer's work
-- `docs/api_routes.md` - Backend engineer's work
-- Generated components and pages - Frontend engineer's work
+**"How would this scale?"**
+> *"Firestore scales automatically. The API routes are stateless. The voice agent handles concurrent calls. The only bottleneck is response latency to Retell — which we keep under 1 second by not using an LLM in the hot path."*
 
-*"This is a simulation of how AI can amplify human engineering capacity. The PM doesn't write code, but the AI team it creates does."*
-
-## Q&A Talking Points
-
-### If asked: "How would you scale this?"
-
-*"The architecture is designed for scale from day one:*
-- *Firestore scales automatically*
-- *Voice/chat agents can handle concurrent conversations*
-- *The CS context layer is stateless and can be cached*
-- *Jira and GitHub workflows scale with the team"*
-
-### If asked: "What about accuracy?"
-
-*"The voice agent has guardrails:*
-- *It knows which orders are in the system (not hallucinating)*
-- *Return policy is hardcoded in the knowledge base*
-- *If it doesn't know something, it escalates*
-- *All conversations are logged for quality review"*
-
-### If asked: "Why focus on voice?"
-
-*"Voice is the future of customer service because:*
-- *It's the fastest way to resolve issues*
-- *Customers prefer calling for complex problems*
-- *It's harder to do well than chat (more real-time, no typing)*
-- *Sierra.AI gets this. That's why I led with it."*
-
-### If asked about Jira integration:
-
-*"The agents actually interact with Jira via the API. They:*
-- *Create epics and stories*
-- *Move tickets through the workflow*
-- *Add comments with their work*
-- *Link PRs to tickets"*
-
-*"It's not just a nice visualization—the agents are genuinely working within professional tools."*
-
-## Backup Plans
-
-If anything breaks during demo:
-
-- **Voice agent down**: Play backup video or show Voiceflow webchat instead
-- **Firestore connection down**: Show static product/order data in the code
-- **Vercel down**: Open GitHub, show the code and architecture
-- **Jira access denied**: Explain the integration conceptually with screenshots
-- **Network issues**: Show screenshots of each feature
+---
 
 ## Closing (1 min)
 
-*"To summarize: This project demonstrates how voice-first customer service, multi-channel consistency, professional infrastructure, and AI-driven development can come together. It's built specifically for Sierra.AI because I understand that the future of customer service is voice-first, but human-empowered. The AI knows when to hand off. The human agent has full context. That's the model that wins."*
-
-Ask if they have questions or want to dive deeper into any part.
+> *"Voice-first, but human-empowered. The AI handles the 80% — order lookups, return processing, policy questions. When it hits the 20% — frustration, edge cases, high-value refunds — it escalates gracefully and hands off full context. The human agent can focus on the hard problems. That's the model that wins.*
+>
+> *I built this specifically because I think that's Sierra's insight too."*
 
 ---
 
 ## Time Breakdown
 
-- Context & Architecture: 3 min
-- Professional Infra (Jira, GitHub): 3 min
-- Shop demo: 5 min
-- Webchat demo: 5 min
-- Voice demo: 10 min ⭐
-- Admin/Escalation: 2 min
-- CrewAI: 3 min
-- Q&A: 5 min
+| Section | Time |
+|---------|------|
+| Context + Architecture | 3 min |
+| Infrastructure (GitHub, Jira) | 3 min |
+| Shop demo | 4 min |
+| Webchat | 3 min |
+| **Voice agent** ⭐ | **10 min** |
+| Admin dashboard | 2 min |
+| Architecture deep-dive | 2 min |
+| Q&A | 5 min |
+| **Total** | **~32 min** |
 
-**Total: 36 minutes** (trim if shorter slots)
+---
 
-## Pro Tips
+## Backup Plans
 
-1. **Speak from the customer's perspective first** - "As a customer, I want to..." then show how the system solves it
-2. **Be honest about simulation** - "This is a prototype, but the architecture is production-ready"
-3. **Emphasize the voice experience** - It's what makes Sierra special
-4. **Show your thinking** - Explain why you made each choice (architecture, design, escalation rules)
-5. **Stay curious** - Ask them questions about their system too
-6. **Practice with live audience** - Have a friend do a dry run
+| Problem | Fallback |
+|---------|---------|
+| Voice agent down | Play backup video, or demo Voiceflow webchat instead |
+| Firestore unreachable | Orders page uses local JSON fallback |
+| Firebase hosting down | Run locally (`npm run dev`) |
+| Network issues | Show code + architecture diagrams from repo |
