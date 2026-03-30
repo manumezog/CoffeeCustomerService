@@ -31,6 +31,9 @@ export default function VoiceflowWidget() {
           description: 'Ask me anything about your orders, returns, or our coffee.',
           color: '#c2410c',
         },
+        launcher: {
+          label: 'Chat with us',
+        },
       })
     }
     script.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs'
