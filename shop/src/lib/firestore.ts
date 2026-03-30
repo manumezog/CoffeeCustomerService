@@ -146,10 +146,10 @@ export async function getEscalations(): Promise<Escalation[]> {
   const q = query(
     collection(db, 'escalations'),
     where('status', '==', 'open'),
-    orderBy('createdAt', 'desc')
   )
   const snap = await getDocs(q)
-  return snap.docs.map(d => ({ id: d.id, ...d.data() } as Escalation))
+  const results = snap.docs.map(d => ({ id: d.id, ...d.data() } as Escalation))
+  return results.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
 export async function updateEscalationStatus(id: string, status: 'claimed' | 'resolved') {
