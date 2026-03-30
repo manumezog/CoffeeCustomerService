@@ -1,16 +1,16 @@
-# Ember & Roast — AI-Powered Customer Service Showcase
+# Ember & Roast — AI-Powered Customer Service
 
-A Sierra.AI interview showcase project demonstrating voice-first customer service, multi-channel AI, and professional engineering practices.
+Voice-first customer service platform for a specialty coffee roastery. Multi-channel AI that handles orders, returns, and escalations across voice, webchat, and email.
 
 **Live demo:** https://coffee-cs.vercel.app
 
 ---
 
-## What This Is
+## Overview
 
-Ember & Roast is a specialty coffee roastery with a fully working AI customer service system. The project shows:
+Ember & Roast is a specialty coffee roastery with a fully working AI customer service system:
 
-- **Voice-first CS** — Retell.ai voice agent with real-time Firestore order lookup via function calling
+- **Voice agent** — Retell.ai with real-time Firestore order lookup via function calling
 - **Webchat** — Voiceflow widget embedded in the shop
 - **Unified CS brain** — `cs-context.ts` handles sentiment analysis, escalation rules, and order lookups across all channels
 - **Admin dashboard** — Real-time escalation tracking with full conversation transcripts
@@ -57,14 +57,12 @@ All CS channels share the same `cs-context.ts` backend for consistent responses.
 | Webchat CS | Voiceflow |
 | Email CS | Resend |
 | Dev Team | Claude Code custom agents |
-| Project Mgmt | Jira Cloud (EMBER project) |
+| Project Mgmt | Jira Cloud |
 | CI/CD | GitHub Actions |
 
 ---
 
 ## Demo Orders
-
-These orders are seeded in Firestore for demo purposes:
 
 | Order ID | Status | Customer |
 |----------|--------|----------|
@@ -73,8 +71,6 @@ These orders are seeded in Firestore for demo purposes:
 | ER-10050 | Delivered | Emma Brown |
 | ER-10038 | Delivered | Bob Smith |
 | ER-10045 | Roasting | Carol Davis |
-
-Try saying "Check my order ER-10042" to the voice agent.
 
 ---
 
@@ -163,28 +159,23 @@ Add all environment variables in **Vercel → Project → Settings → Environme
 
 ---
 
-## Sierra.AI Alignment
+## How It Works
 
-| Sierra Value | How This Project Demonstrates It |
-|-------------|----------------------------------|
-| **Voice-First** | Retell voice agent is the primary channel, with real order lookup via function calling |
-| **Multi-Channel** | Same `cs-context.ts` brain serves voice, chat, and email consistently |
-| **Empathetic AI** | Sentiment analysis detects frustration; escalation preserves full context |
-| **Seamless Handoff** | Transcript + order data saved to Firestore before human agent takes over |
-| **Outcome-Driven** | Agent processes returns, provides tracking — not just answers |
-| **Professional Engineering** | GitHub CI/CD, Jira EMBER project, Vercel infra |
-| **Agent-Building Agents** | Claude Code team (PM, Designer, BE, FE) built this codebase |
+### Voice Channel
+The voice agent (Retell.ai) uses function calling to hit `/api/orders/lookup` mid-conversation. When a customer gives their order number, the agent fetches real data from Firestore and responds with live status, tracking info, and return eligibility.
 
----
+When a customer is frustrated or asks for a human, the agent calls `report_escalation` which saves the conversation to Firestore. The escalation appears on the admin dashboard within seconds.
 
-## Interview Talking Points
+### CS Brain (`cs-context.ts`)
+All non-voice channels run through `cs-context.ts` which:
+- Detects sentiment across the full conversation history
+- Extracts order IDs from natural language
+- Applies escalation rules (frustration, high-value refunds, repeated contact)
+- Generates channel-appropriate responses (brief for voice, detailed for chat/email)
 
-1. **"Voice is the primary channel"** — every architectural decision optimizes for voice first, then adapts to chat and email
-2. **"The AI knows its limits"** — escalation triggers on frustration, high-value refunds, or repeated contact; always with full context preserved
-3. **"Consistency across channels"** — `cs-context.ts` is called by all three channels; customer always gets the same answer
-4. **"Function calling bridges AI and data"** — Retell's built-in LLM calls `/api/orders/lookup` to fetch real Firestore data mid-conversation
-5. **"AI multiplies the team"** — four Claude Code agents (PM, Designer, BE, FE) drove the build autonomously
+### Admin Dashboard
+Polls Firestore every 5 seconds for open escalations. Shows channel, customer, order, sentiment score, recommended action, and full transcript. Agents can claim or resolve escalations directly from the dashboard.
 
 ---
 
-*Built as a Sierra.AI interview showcase — March 2026*
+*Built with Next.js, Firebase, Retell.ai, Voiceflow, and Claude Code*
