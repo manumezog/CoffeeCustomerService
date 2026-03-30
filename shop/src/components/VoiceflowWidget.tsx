@@ -33,7 +33,7 @@ export default function VoiceflowWidget() {
         },
       })
     }
-    script.src = 'https://cdn.voiceflow.com/widget/bundle.mjs'
+    script.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs'
     document.head.appendChild(script)
 
     return () => {
