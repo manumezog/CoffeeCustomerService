@@ -10,8 +10,8 @@
       { "productId": "1", "productName": "Ethiopian Yirgacheffe", "quantity": 2, "price": 18.99 }
     ],
     "total": 37.98,
-    "createdAt": "2024-03-20T10:00:00Z",
-    "estimatedDelivery": "2024-03-27",
+    "createdAt": "2026-03-27T10:00:00Z",
+    "estimatedDelivery": "2026-04-01",
     "shippingAddress": {
       "street": "123 Main St",
       "city": "Portland",
@@ -31,8 +31,8 @@
       { "productId": "7", "productName": "Espresso Starter", "quantity": 1, "price": 22.99 }
     ],
     "total": 38.98,
-    "createdAt": "2024-03-10T14:30:00Z",
-    "estimatedDelivery": "2024-03-17",
+    "createdAt": "2026-03-18T14:30:00Z",
+    "estimatedDelivery": "2026-03-25",
     "shippingAddress": {
       "street": "456 Oak Ave",
       "city": "Seattle",
@@ -49,7 +49,7 @@
       { "productId": "5", "productName": "Roastmaster's Reserve", "quantity": 1, "price": 24.99 }
     ],
     "total": 24.99,
-    "createdAt": "2024-03-28T08:15:00Z",
+    "createdAt": "2026-03-29T08:15:00Z",
     "shippingAddress": {
       "street": "789 Pine Rd",
       "city": "San Francisco",
@@ -68,8 +68,8 @@
       { "productId": "2", "productName": "Colombian Supremo", "quantity": 3, "price": 16.99 }
     ],
     "total": 50.97,
-    "createdAt": "2024-03-15T11:45:00Z",
-    "estimatedDelivery": "2024-03-22",
+    "createdAt": "2026-03-01T11:45:00Z",
+    "estimatedDelivery": "2026-03-08",
     "shippingAddress": {
       "street": "321 Elm St",
       "city": "Boston",
@@ -81,18 +81,20 @@
     "id": "ER-10050",
     "customerName": "Emma Brown",
     "customerEmail": "emma@example.com",
-    "status": "confirmed",
+    "status": "delivered",
+    "trackingNumber": "9400111899223450130256",
+    "carrier": "USPS",
     "items": [
       { "productId": "6", "productName": "Cold Brew Kit", "quantity": 1, "price": 29.99 }
     ],
     "total": 29.99,
-    "createdAt": "2024-03-26T16:20:00Z",
+    "createdAt": "2026-03-20T16:20:00Z",
+    "estimatedDelivery": "2026-03-27",
     "shippingAddress": {
       "street": "555 Maple Dr",
       "city": "Austin",
       "state": "TX",
       "zip": "78701"
-    },
-    "notes": "Roasting in progress - shipping in 2-3 days"
+    }
   }
 ]
