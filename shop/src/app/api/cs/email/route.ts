@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     if (apiKey) {
       const resend = new Resend(apiKey)
       await resend.emails.send({
-        from: 'Ember & Roast Support <support@emberandroast.com>',
+        from: 'Ember & Roast Support <onboarding@resend.dev>',
         to: [customerEmail],
         subject: `Re: ${subject}`,
         text: buildEmailReply(result.response, customerName, result.escalationNeeded),
