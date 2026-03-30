@@ -8,7 +8,6 @@ import {
   updateDoc,
   query,
   where,
-  orderBy,
 } from 'firebase/firestore'
 
 // ── Types ────────────────────────────────────────────────────────────────────
