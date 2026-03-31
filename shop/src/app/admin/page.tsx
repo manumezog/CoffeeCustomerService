@@ -99,7 +99,7 @@ export default function AdminPage() {
       <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-roast font-heading">Escalation Dashboard</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-roast font-heading">Escalation Dashboard</h1>
             <p className="text-gray-500 mt-1">Open escalations requiring human attention</p>
           </div>
           <div className="flex flex-col items-end gap-1">
@@ -135,7 +135,7 @@ export default function AdminPage() {
             {escalations.map(e => (
               <div key={e.id} className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                 <div className="p-5">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between md:gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-lg">{CHANNEL_ICON[e.channel]}</span>
@@ -155,9 +155,9 @@ export default function AdminPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className={`text-sm font-semibold ${SENTIMENT_COLOR(e.sentiment)}`}>
-                        Sentiment: {(e.sentiment * 100).toFixed(0)}%
+                    <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100 md:mt-0 md:pt-0 md:border-0 md:shrink-0">
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 ${SENTIMENT_COLOR(e.sentiment)}`}>
+                        {(e.sentiment * 100).toFixed(0)}% sentiment
                       </span>
                       <button
                         onClick={() => setExpanded(expanded === e.id ? null : e.id)}
@@ -168,14 +168,14 @@ export default function AdminPage() {
                       <button
                         onClick={() => updateStatus(e.id, 'claimed')}
                         disabled={updating === e.id}
-                        className="bg-amber-500 hover:bg-amber-600 text-white text-sm px-3 py-1.5 rounded transition disabled:opacity-50"
+                        className="bg-amber-500 hover:bg-amber-600 text-white text-sm px-4 py-2.5 rounded flex-1 text-center md:flex-none md:px-3 md:py-1.5 transition disabled:opacity-50"
                       >
                         Claim
                       </button>
                       <button
                         onClick={() => updateStatus(e.id, 'resolved')}
                         disabled={updating === e.id}
-                        className="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1.5 rounded transition disabled:opacity-50"
+                        className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2.5 rounded flex-1 text-center md:flex-none md:px-3 md:py-1.5 transition disabled:opacity-50"
                       >
                         Resolve
                       </button>
