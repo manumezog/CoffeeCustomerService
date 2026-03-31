@@ -3,23 +3,26 @@ import type { CsInput } from '@/lib/cs-context'
 
 export const dynamic = 'force-dynamic'
 
-const ALLOWED_ORIGINS = [
-  'https://coffee-cs.vercel.app',
-  'http://localhost:3000',
-]
-
-export async function POST(req: Request) {
-  const origin = req.headers.get('origin') ?? ''
+function isAuthorized(req: Request): boolean {
   const voiceflowSecret = process.env.VOICEFLOW_WEBHOOK_SECRET
+  // If no secret is configured, allow all (dev / demo mode — matches email route pattern)
+  if (!voiceflowSecret) return true
+
+  const origin = req.headers.get('origin') ?? ''
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const allowedOrigins = [appUrl, 'http://localhost:3000']
+
+  if (allowedOrigins.includes(origin)) return true
+
+  // Voiceflow calls this server-side (no origin header) — validate by shared secret
   const authHeader = req.headers.get('authorization')?.replace('Bearer ', '')
     ?? req.headers.get('x-vf-signature')
+  return authHeader === voiceflowSecret
+}
 
-  // Allow if valid origin OR valid Voiceflow secret
-  const authorized = ALLOWED_ORIGINS.includes(origin)
-    || (voiceflowSecret && authHeader === voiceflowSecret)
-
-  if (!authorized) {
-    console.warn('[cs/webhook] Blocked request from origin:', origin)
+export async function POST(req: Request) {
+  if (!isAuthorized(req)) {
+    console.warn('[cs/webhook] Blocked request from origin:', req.headers.get('origin'))
     return Response.json({ data: null, error: 'Forbidden' }, { status: 403 })
   }
 
