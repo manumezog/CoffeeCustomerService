@@ -44,9 +44,67 @@ interface ResendWebhookPayload {
     from: string
     to: string[]
     subject: string
-    text?: string   // inbound body — present in webhook payload
-    html?: string   // inbound body (HTML variant)
+    text?: string
+    html?: string
+    [key: string]: unknown  // capture any undocumented fields Resend may add
   }
+}
+
+/** Strip HTML tags and collapse whitespace for plain-text extraction */
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+/**
+ * Resolve the inbound email body from multiple sources.
+ * Resend's webhook payload does not always include text/html directly,
+ * so we try the payload first, then fall back to the Resend API.
+ */
+async function resolveEmailBody(
+  d: ResendWebhookPayload['data'],
+  apiKey: string | undefined
+): Promise<string | undefined> {
+  // 1. Direct from webhook payload
+  if (d.text) {
+    console.log('[email] body source: webhook text field')
+    return d.text
+  }
+  if (d.html) {
+    console.log('[email] body source: webhook html field (stripped)')
+    return stripHtml(d.html)
+  }
+
+  // Log all payload keys to diagnose what Resend is actually sending
+  console.log('[email] payload keys:', Object.keys(d).join(', '))
+
+  // 2. Fetch full email via Resend API — works for inbound email IDs too
+  if (apiKey) {
+    try {
+      const res = await fetch(`https://api.resend.com/emails/${d.email_id}`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      })
+      console.log('[email] API fetch status:', res.status)
+      if (res.ok) {
+        const fetched = await res.json() as Record<string, unknown>
+        console.log('[email] API fetch keys:', Object.keys(fetched).join(', '))
+        const fetchedText = fetched.text as string | undefined
+        const fetchedHtml = fetched.html as string | undefined
+        if (fetchedText) {
+          console.log('[email] body source: API text field')
+          return fetchedText
+        }
+        if (fetchedHtml) {
+          console.log('[email] body source: API html field (stripped)')
+          return stripHtml(fetchedHtml)
+        }
+      }
+    } catch (e) {
+      console.error('[email] API fetch error:', e)
+    }
+  }
+
+  console.warn('[email] body not found — falling back to subject')
+  return undefined
 }
 
 interface DirectTestPayload {
@@ -91,10 +149,9 @@ export async function POST(req: Request) {
 
     if ('type' in body && body.type === 'email.received') {
       const d = body.data
-      // Resend inbound webhooks include text/html directly in the payload.
-      // The /emails/{id} endpoint is for outbound emails only — do not use it here.
-      const text = d.text ?? d.subject
-      console.log('[email] inbound body:', text?.slice(0, 100))
+      const resolvedBody = await resolveEmailBody(d, apiKey)
+      const text = resolvedBody ?? d.subject  // last-resort: subject only
+      console.log('[email] final text:', text.slice(0, 200))
       email = { from: d.from, subject: d.subject, text }
     } else {
       // Direct test POST
