@@ -63,18 +63,26 @@ export async function POST(req: Request) {
     let email: EmailContent | null = null
 
     if ('type' in body && body.type === 'email.received') {
-      // Resend webhook — always fetch full email to get body text
       const d = body.data
+      // Try fetching full email body; fall back to subject as the message
+      let text = d.subject
       if (apiKey) {
-        const fetched = await fetchEmailContent(d.email_id, apiKey)
-        email = {
-          from: fetched?.from ?? d.from,
-          subject: fetched?.subject ?? d.subject,
-          text: fetched?.text ?? d.subject, // fall back to subject if no body
+        try {
+          const res = await fetch(`https://api.resend.com/emails/${d.email_id}`, {
+            headers: { Authorization: `Bearer ${apiKey}` },
+          })
+          if (res.ok) {
+            const fetched = await res.json() as { from?: string; subject?: string; text?: string }
+            text = fetched.text ?? fetched.subject ?? d.subject
+            console.log('[email] fetched body:', text?.slice(0, 100))
+          } else {
+            console.log('[email] fetch failed:', res.status, await res.text())
+          }
+        } catch (e) {
+          console.log('[email] fetch error:', e)
         }
-      } else {
-        email = { from: d.from, subject: d.subject, text: d.subject }
       }
+      email = { from: d.from, subject: d.subject, text }
     } else {
       // Direct test POST
       const direct = body as DirectTestPayload
