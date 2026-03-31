@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 async function verifyResendSignature(req: Request, rawBody: string): Promise<boolean> {
   const secret = process.env.RESEND_WEBHOOK_SECRET
-  if (!secret) return true // skip validation if secret not configured
+  if (!secret) return false // fail-closed: unconfigured secret must block, not approve
 
   // Resend uses Svix for webhook delivery.
   // Svix signs: "{svix-id}.{svix-timestamp}.{body}" — NOT just the body.
