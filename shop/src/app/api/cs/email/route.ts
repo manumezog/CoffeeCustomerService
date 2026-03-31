@@ -1,7 +1,19 @@
 import { Resend } from 'resend'
+import { createHmac } from 'crypto'
 import { csContext } from '@/lib/cs-context'
 
 export const dynamic = 'force-dynamic'
+
+async function verifyResendSignature(req: Request, rawBody: string): Promise<boolean> {
+  const secret = process.env.RESEND_WEBHOOK_SECRET
+  if (!secret) return true // skip validation if secret not configured
+
+  const signature = req.headers.get('svix-signature') ?? req.headers.get('x-resend-signature')
+  if (!signature) return false
+
+  const expected = createHmac('sha256', secret).update(rawBody).digest('hex')
+  return signature.includes(expected)
+}
 
 // Handles two modes:
 // 1. Resend inbound webhook (email.received event) — body contains { type, data: { email_id } }
@@ -57,7 +69,16 @@ async function fetchEmailContent(emailId: string, apiKey: string): Promise<Email
 export async function POST(req: Request) {
   try {
     const apiKey = process.env.RESEND_API_KEY
-    const body = await req.json() as ResendWebhookPayload | DirectTestPayload
+    const rawBody = await req.text()
+
+    // Verify Resend webhook signature for inbound webhooks
+    const isWebhook = rawBody.includes('"type"')
+    if (isWebhook && !(await verifyResendSignature(req, rawBody))) {
+      console.warn('[email] Invalid webhook signature — request blocked')
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const body = JSON.parse(rawBody) as ResendWebhookPayload | DirectTestPayload
 
     // Determine email content based on payload type
     let email: EmailContent | null = null

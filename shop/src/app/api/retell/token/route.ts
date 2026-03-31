@@ -2,7 +2,19 @@ import Retell from 'retell-sdk'
 
 export const dynamic = 'force-dynamic'
 
+const ALLOWED_ORIGINS = [
+  'https://coffee-cs.vercel.app',
+  'http://localhost:3000',
+]
+
 export async function POST(req: Request) {
+  // Block requests from unknown origins
+  const origin = req.headers.get('origin') ?? ''
+  if (!ALLOWED_ORIGINS.includes(origin)) {
+    console.warn('[retell/token] Blocked request from origin:', origin)
+    return Response.json({ data: null, error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     const { agentId } = await req.json() as { agentId: string }
     if (!agentId) {

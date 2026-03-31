@@ -13,6 +13,16 @@ export async function GET() {
 
 // Called by Retell as a function tool when the agent decides to escalate
 export async function POST(req: Request) {
+  // Simple bearer token check — set ESCALATION_SECRET in Vercel + Retell custom header
+  const secret = process.env.ESCALATION_SECRET
+  if (secret) {
+    const auth = req.headers.get('x-escalation-secret') ?? req.headers.get('authorization')?.replace('Bearer ', '')
+    if (auth !== secret) {
+      console.warn('[escalation] Unauthorized POST blocked')
+      return Response.json({ result: 'Unauthorized' }, { status: 403 })
+    }
+  }
+
   try {
     const body = await req.json() as {
       args?: {
