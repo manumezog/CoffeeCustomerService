@@ -9,7 +9,13 @@ export const dynamic = 'force-dynamic'
 
 interface ResendWebhookPayload {
   type: string
-  data: { email_id: string }
+  data: {
+    email_id: string
+    from: string
+    to: string[]
+    subject: string
+    text?: string
+  }
 }
 
 interface DirectTestPayload {
@@ -57,10 +63,14 @@ export async function POST(req: Request) {
     let email: EmailContent | null = null
 
     if ('type' in body && body.type === 'email.received') {
-      // Resend webhook — fetch full email content via API
-      if (!apiKey) return Response.json({ data: null, error: 'Resend not configured' }, { status: 503 })
-      email = await fetchEmailContent(body.data.email_id, apiKey)
-      if (!email) return Response.json({ data: null, error: 'Failed to fetch email content' }, { status: 500 })
+      // Resend webhook — use data from payload, fetch body if missing
+      const d = body.data
+      let text = d.text
+      if (!text && apiKey) {
+        const fetched = await fetchEmailContent(d.email_id, apiKey)
+        text = fetched?.text ?? ''
+      }
+      email = { from: d.from, subject: d.subject, text: text ?? '' }
     } else {
       // Direct test POST
       const direct = body as DirectTestPayload
