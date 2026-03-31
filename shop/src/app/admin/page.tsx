@@ -56,16 +56,20 @@ export default function AdminPage() {
   const [updating, setUpdating] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
+  const escalationSecret = process.env.NEXT_PUBLIC_ESCALATION_SECRET ?? ''
+
   const fetchEscalations = useCallback(async () => {
     try {
-      const res = await fetch('/api/cs/escalation')
+      const res = await fetch('/api/cs/escalation', {
+        headers: escalationSecret ? { 'x-escalation-secret': escalationSecret } : {},
+      })
       const json = await res.json()
       if (json.data) setEscalations(json.data)
       setLastUpdated(new Date())
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [escalationSecret])
 
   useEffect(() => {
     fetchEscalations()
@@ -78,7 +82,10 @@ export default function AdminPage() {
     try {
       await fetch('/api/cs/escalation', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(escalationSecret ? { 'x-escalation-secret': escalationSecret } : {}),
+        },
         body: JSON.stringify({ id, status }),
       })
       setEscalations(prev => prev.filter(e => e.id !== id))
