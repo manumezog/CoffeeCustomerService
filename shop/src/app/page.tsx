@@ -2,8 +2,10 @@ import CallButton from '@/components/CallButton'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-roast to-amber-900 text-white">
-      <div className="max-w-4xl mx-auto px-4 py-20">
+    <main className="relative min-h-screen overflow-hidden text-white">
+      <img src="/images/hero-background.png" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover object-center" />
+      <div className="absolute inset-0 bg-roast/65" />
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-20">
         <h1 className="text-5xl font-bold mb-4 font-heading">Ember & Roast</h1>
         <p className="text-xl text-amber-100 mb-4">Premium Specialty Coffee, Roasted Fresh</p>
         <p className="text-amber-200 mb-10 max-w-xl">

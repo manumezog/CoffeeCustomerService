@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import productsJson from '@/data/products.json'
 import { getProduct } from '@/lib/firestore'
 
@@ -46,19 +47,15 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
         {/* Two-column layout */}
         <div className="flex flex-col md:flex-row gap-10">
-          {/* Image placeholder */}
-          <div className="w-full md:w-1/2 shrink-0">
-            <div className="bg-gradient-to-br from-amber-100 to-orange-50 aspect-square rounded-2xl flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className="w-24 h-24 text-amber-400 opacity-60"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M2 21v-2h2V3h16v16h2v2H2zm4-2h12V5H6v14zm2-2h2v-2H8v2zm4 0h2v-2h-2v2zm-4-4h2v-2H8v2zm4 0h2v-2h-2v2zm-4-4h2V7H8v2zm4 0h2V7h-2v2z" />
-              </svg>
-            </div>
+          {/* Product image */}
+          <div className="aspect-square rounded-2xl overflow-hidden border border-amber-200 bg-amber-50 relative w-full md:w-1/2 shrink-0">
+            <Image
+              src="/images/product-placeholder.png"
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain"
+            />
           </div>
 
           {/* Product details */}

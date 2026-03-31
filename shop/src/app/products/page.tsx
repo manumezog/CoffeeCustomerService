@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import products from '@/data/products.json'
 
 export default function ProductsPage() {
@@ -11,10 +12,14 @@ export default function ProductsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <div key={product.id} className="border border-amber-200 rounded-lg p-6 hover:shadow-lg transition">
-              <div className="bg-gradient-to-br from-amber-100 to-orange-50 aspect-[4/3] rounded-xl mb-4 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-12 h-12 text-amber-400 opacity-60" fill="currentColor">
-                  <path d="M2 21v-2h2V3h16v16h2v2H2zm4-2h12V5H6v14zm2-2h2v-2H8v2zm4 0h2v-2h-2v2zm-4-4h2v-2H8v2zm4 0h2v-2h-2v2zm-4-4h2V7H8v2zm4 0h2V7h-2v2z"/>
-                </svg>
+              <div className="aspect-[4/3] rounded-xl overflow-hidden border border-amber-100 bg-amber-50 mb-4 relative">
+                <Image
+                  src="/images/product-placeholder.png"
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-contain"
+                />
               </div>
               <Link href={'/products/' + product.id} className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honey rounded">
                 <h2 className="text-xl font-bold text-roast mb-2 font-heading">{product.name}</h2>
