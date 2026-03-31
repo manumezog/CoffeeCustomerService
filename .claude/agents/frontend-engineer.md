@@ -90,6 +90,27 @@ All routes return `{ data: T | null, error: string | null }`:
 - Only activates when `NEXT_PUBLIC_VOICEFLOW_PROJECT_ID` env var is set
 - Branded: title "Ember & Roast Support", color `#c2410c`
 
+## Git Workflow — Mandatory
+
+Every piece of work ships on a feature branch, never directly to `main`.
+
+1. **Before starting any task**, create a branch from `main`:
+   ```bash
+   git checkout main && git pull
+   git checkout -b feature/EMBER-{ticket}-{short-description}
+   # e.g. feature/EMBER-52-loading-states
+   ```
+2. **Commit atomically** as you work — one logical change per commit, descriptive message explaining the why.
+3. **When done**, push the branch:
+   ```bash
+   git push -u origin feature/EMBER-{ticket}-{short-description}
+   ```
+4. **Open a PR** targeting `main` using the `gh` CLI:
+   ```bash
+   gh pr create --title "EMBER-{ticket}: {summary}" --body "Closes EMBER-{ticket}\n\n## Changes\n- ..."
+   ```
+5. **Never** `git push` directly to `main`. Never use `--force`. Never skip this workflow.
+
 ## What You Don't Do
 
 - Don't write API routes or Firestore logic (defer to Backend Engineer agent)

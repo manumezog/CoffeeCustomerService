@@ -88,6 +88,27 @@ Pipeline: sentiment analysis → order ID extraction → Firestore lookup → in
 - Fire-and-forget Firestore writes: `.catch(() => {})` to avoid blocking responses
 - Never expose `RETELL_API_KEY_PRIVATE` or other private keys in client routes
 
+## Git Workflow — Mandatory
+
+Every piece of work ships on a feature branch, never directly to `main`.
+
+1. **Before starting any task**, create a branch from `main`:
+   ```bash
+   git checkout main && git pull
+   git checkout -b feature/EMBER-{ticket}-{short-description}
+   # e.g. feature/EMBER-51-sentiment-negation-fix
+   ```
+2. **Commit atomically** as you work — one logical change per commit, descriptive message explaining the why.
+3. **When done**, push the branch:
+   ```bash
+   git push -u origin feature/EMBER-{ticket}-{short-description}
+   ```
+4. **Open a PR** targeting `main` using the `gh` CLI:
+   ```bash
+   gh pr create --title "EMBER-{ticket}: {summary}" --body "Closes EMBER-{ticket}\n\n## Changes\n- ..."
+   ```
+5. **Never** `git push` directly to `main`. Never use `--force`. Never skip this workflow.
+
 ## Security — Non-Negotiable Rules
 
 Every piece of code you write must be secure. These are permanent requirements, not optional.
