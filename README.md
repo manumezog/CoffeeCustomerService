@@ -95,8 +95,9 @@ CustomerService/
 │   │   │   └── VoiceflowWidget.tsx
 │   │   ├── lib/
 │   │   │   ├── cs-context.ts    # Unified CS brain (all channels)
-│   │   │   ├── firestore.ts     # Firestore helpers
-│   │   │   └── firebase.ts      # Firebase config
+│   │   │   ├── firestore.ts     # Firestore helpers (Admin SDK)
+│   │   │   ├── firebase.ts      # Firebase client config (frontend only)
+│   │   │   └── firebase-admin.ts # Firebase Admin SDK (server-side)
 │   │   └── data/
 │   │       ├── products.json    # 8 specialty coffees
 │   │       └── orders.json      # Demo orders
@@ -135,6 +136,7 @@ npx tsx --env-file=.env.local scripts/seed-firestore.ts
 ### Environment Variables
 
 ```env
+# Firebase (client — public)
 NEXT_PUBLIC_FIREBASE_API_KEY=
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=
@@ -142,11 +144,28 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIRESTORE_DATABASE_ID=
+
+# Firebase Admin SDK (server — keep secret)
+FIREBASE_SERVICE_ACCOUNT=          # JSON from Firebase Console → Service Accounts
+
+# Retell
 NEXT_PUBLIC_RETELL_AGENT_ID=
-NEXT_PUBLIC_RETELL_API_KEY=
-RETELL_API_KEY_PRIVATE=
+RETELL_API_KEY=                    # From Retell dashboard
+RETELL_WEBHOOK_SECRET=             # From Retell dashboard → Agent → Webhook Secret
+
+# Voiceflow
 NEXT_PUBLIC_VOICEFLOW_PROJECT_ID=
+VOICEFLOW_WEBHOOK_SECRET=          # Optional
+
+# Resend
 RESEND_API_KEY=
+RESEND_WEBHOOK_SECRET=             # From Resend dashboard → Webhooks
+
+# Internal secrets
+ESCALATION_SECRET=                 # Protects escalation API
+NEXT_PUBLIC_ESCALATION_SECRET=     # Same value — used by admin dashboard
+LOOKUP_ORDER_KEY=                  # Must match header set in Retell function tool
+ORDER_ADMIN_SECRET=                # Protects order status PATCH
 ```
 
 ---
@@ -178,25 +197,41 @@ Polls Firestore every 5 seconds for open escalations. Shows channel, customer, o
 
 ---
 
+## Security
+
+All server-side Firestore access uses the Firebase Admin SDK (bypasses client security rules). Firestore Security Rules deny all direct client reads/writes. API endpoints are protected as follows:
+
+| Endpoint | Auth method |
+|---|---|
+| `POST /api/retell` | HMAC-SHA256 (`RETELL_WEBHOOK_SECRET`) |
+| `POST /api/orders/lookup` | Static header (`LOOKUP_ORDER_KEY`) |
+| `PATCH /api/orders/[id]` | Bearer token (`ORDER_ADMIN_SECRET`) |
+| `GET/POST/PATCH /api/cs/escalation` | Static header (`ESCALATION_SECRET`) |
+| `POST /api/cs/webhook` | Origin allowlist + optional Bearer (`VOICEFLOW_WEBHOOK_SECRET`) |
+| `POST /api/cs/email` | HMAC-SHA256 (`RESEND_WEBHOOK_SECRET`) |
+| `POST /api/retell/token` | Origin allowlist |
+
+---
+
 ## Roadmap
 
-### Sprint 4 — Stability & CS Polish
-| Story | Priority |
-|-------|----------|
-| EMBER-34: Fix Resend inbound email body fetch | P1 |
-| EMBER-35: Webhook signature validation (Retell + Resend) | P1 |
-| EMBER-36: Fix sentiment negation bug in cs-context.ts | P1 |
-| EMBER-37: UI polish — product cards, hero, Badge component | P2 |
-| EMBER-38: CallButton error handling and retry UX | P2 |
-| EMBER-39: Link escalation to cs-interaction record | P3 |
+### Sprint 4 — Security & Infrastructure ✅
+| Story | Status |
+|-------|--------|
+| EMBER-35: Webhook signature validation (Retell + Resend) | ✅ Done |
+| Migrate Firestore to Admin SDK | ✅ Done |
+| Lock down all API endpoints with auth | ✅ Done |
+| Fix admin dashboard 403 on escalation fetch | ✅ Done |
 
-### Sprint 5 — E-Commerce Core
+### Sprint 5 — Polish & Reliability
 | Story | Priority |
 |-------|----------|
-| EMBER-40: Add to cart with localStorage | P1 |
-| EMBER-41: Checkout page + order creation in Firestore | P1 |
-| EMBER-42: Order confirmation email via Resend | P1 |
-| EMBER-43: Mobile nav accessibility (focus trap, keyboard) | P2 |
+| Fix Resend inbound email body fetch | P1 |
+| Fix sentiment negation bug in cs-context.ts | P1 |
+| Order GET rate limiting (prevent enumeration) | P2 |
+| Add to cart + checkout flow | P2 |
+| Order confirmation email via Resend | P2 |
+| Mobile nav accessibility | P3 |
 
 ---
 
