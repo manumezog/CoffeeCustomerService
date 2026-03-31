@@ -1,14 +1,4 @@
-import { db } from '@/lib/firebase'
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  addDoc,
-  updateDoc,
-  query,
-  where,
-} from 'firebase/firestore'
+import { getAdminDb } from '@/lib/firebase-admin'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -88,24 +78,22 @@ export interface Escalation {
 // ── Products ─────────────────────────────────────────────────────────────────
 
 export async function getProducts(): Promise<Product[]> {
-  const snap = await getDocs(collection(db, 'products'))
+  const snap = await getAdminDb().collection('products').get()
   return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product))
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
-  const snap = await getDoc(doc(db, 'products', id))
-  return snap.exists() ? ({ id: snap.id, ...snap.data() } as Product) : null
+  const snap = await getAdminDb().collection('products').doc(id).get()
+  return snap.exists ? ({ id: snap.id, ...snap.data() } as Product) : null
 }
 
 // ── Orders ───────────────────────────────────────────────────────────────────
 
 export async function getOrder(id: string): Promise<Order | null> {
-  // Try by document ID first, then by 'id' field
-  const snap = await getDoc(doc(db, 'orders', id))
-  if (snap.exists()) return { id: snap.id, ...snap.data() } as Order
+  const snap = await getAdminDb().collection('orders').doc(id).get()
+  if (snap.exists) return { id: snap.id, ...snap.data() } as Order
 
-  const q = query(collection(db, 'orders'), where('id', '==', id))
-  const results = await getDocs(q)
+  const results = await getAdminDb().collection('orders').where('id', '==', id).get()
   if (!results.empty) {
     const d = results.docs[0]
     return { id: d.id, ...d.data() } as Order
@@ -114,16 +102,16 @@ export async function getOrder(id: string): Promise<Order | null> {
 }
 
 export async function updateOrderStatus(id: string, status: OrderStatus, notes?: string) {
-  const snap = await getDoc(doc(db, 'orders', id))
-  if (snap.exists()) {
-    await updateDoc(doc(db, 'orders', id), { status, ...(notes ? { notes } : {}) })
+  const snap = await getAdminDb().collection('orders').doc(id).get()
+  if (snap.exists) {
+    await getAdminDb().collection('orders').doc(id).update({ status, ...(notes ? { notes } : {}) })
   }
 }
 
 // ── CS Interactions ──────────────────────────────────────────────────────────
 
 export async function saveCsInteraction(interaction: CsInteraction): Promise<string> {
-  const ref = await addDoc(collection(db, 'cs-interactions'), {
+  const ref = await getAdminDb().collection('cs-interactions').add({
     ...interaction,
     createdAt: new Date().toISOString(),
   })
@@ -133,7 +121,7 @@ export async function saveCsInteraction(interaction: CsInteraction): Promise<str
 // ── Escalations ──────────────────────────────────────────────────────────────
 
 export async function createEscalation(escalation: Omit<Escalation, 'id' | 'createdAt'>): Promise<string> {
-  const ref = await addDoc(collection(db, 'escalations'), {
+  const ref = await getAdminDb().collection('escalations').add({
     ...escalation,
     status: 'open',
     createdAt: new Date().toISOString(),
@@ -142,15 +130,11 @@ export async function createEscalation(escalation: Omit<Escalation, 'id' | 'crea
 }
 
 export async function getEscalations(): Promise<Escalation[]> {
-  const q = query(
-    collection(db, 'escalations'),
-    where('status', '==', 'open'),
-  )
-  const snap = await getDocs(q)
+  const snap = await getAdminDb().collection('escalations').where('status', '==', 'open').get()
   const results = snap.docs.map(d => ({ id: d.id, ...d.data() } as Escalation))
   return results.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
 export async function updateEscalationStatus(id: string, status: 'claimed' | 'resolved') {
-  await updateDoc(doc(db, 'escalations', id), { status })
+  await getAdminDb().collection('escalations').doc(id).update({ status })
 }

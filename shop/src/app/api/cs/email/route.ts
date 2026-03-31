@@ -53,19 +53,6 @@ function extractSenderName(from: string): string | undefined {
   return match ? match[1].trim() : undefined
 }
 
-async function fetchEmailContent(emailId: string, apiKey: string): Promise<EmailContent | null> {
-  try {
-    const res = await fetch(`https://api.resend.com/emails/${emailId}`, {
-      headers: { Authorization: `Bearer ${apiKey}` },
-    })
-    if (!res.ok) return null
-    const data = await res.json() as { from: string; subject: string; text: string }
-    return { from: data.from, subject: data.subject, text: data.text }
-  } catch {
-    return null
-  }
-}
-
 export async function POST(req: Request) {
   try {
     const apiKey = process.env.RESEND_API_KEY
