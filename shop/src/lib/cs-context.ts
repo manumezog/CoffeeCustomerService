@@ -58,8 +58,13 @@ const ESCALATION_RULES: EscalationRule[] = [
 ]
 
 const EXPLICIT_ESCALATION_PHRASES = [
+  // Voice/chat style
   'speak to a human', 'talk to a person', 'real person', 'human agent',
   'manager', 'supervisor', 'escalate', 'not helpful',
+  // Email complaint/reimbursement language
+  'complaint', 'reimbursement', 'compensation', 'unacceptable', 'demand a refund',
+  'this is ridiculous', 'very disappointed', 'extremely unhappy', 'demand',
+  'legal action', 'chargeback', 'dispute', 'BBB', 'better business',
 ]
 
 // ── Sentiment Analysis (simple keyword-based) ─────────────────────────────────
@@ -225,9 +230,13 @@ export async function csContext(input: CsInput): Promise<CsOutput> {
   const valueEscalation = ESCALATION_RULES[1].check(sentiment, refundAmount, conversationHistory.length)
   const repeatContactEscalation = ESCALATION_RULES[2].check(sentiment, refundAmount, conversationHistory.length)
 
-  const escalationNeeded = explicitEscalation || sentimentEscalation || valueEscalation || repeatContactEscalation
+  // Email return/reimbursement requests always get human review
+  const emailReturnEscalation = channel === 'email' && intent === 'return_request'
+
+  const escalationNeeded = explicitEscalation || sentimentEscalation || valueEscalation || repeatContactEscalation || emailReturnEscalation
   let escalationReason: string | undefined
   if (explicitEscalation) escalationReason = 'Customer requested human agent'
+  else if (emailReturnEscalation) escalationReason = 'Email return/reimbursement request — requires human review'
   else if (sentimentEscalation) escalationReason = 'Customer frustration detected'
   else if (valueEscalation) escalationReason = `High-value refund: $${refundAmount.toFixed(2)}`
   else if (repeatContactEscalation) escalationReason = 'Recurring issue — multiple turns without resolution'

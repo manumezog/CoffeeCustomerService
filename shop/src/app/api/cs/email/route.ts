@@ -107,9 +107,12 @@ export async function POST(req: Request) {
     const customerEmail = from.includes('<') ? from.replace(/.*<(.+)>/, '$1').trim() : from.trim()
     const orderId = extractOrderId(subject + ' ' + text)
 
+    // Include subject in message so complaint/escalation keywords in subject are detected
+    const fullMessage = subject ? `Subject: ${subject}\n\n${text}` : text
+
     const result = await csContext({
       channel: 'email',
-      message: text,
+      message: fullMessage,
       orderId,
       customerName,
       customerEmail,
