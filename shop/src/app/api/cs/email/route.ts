@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 import { csContext } from '@/lib/cs-context'
 
 export const dynamic = 'force-dynamic'
@@ -10,19 +10,27 @@ async function verifyResendSignature(req: Request, rawBody: string): Promise<boo
 
   // Resend uses Svix for webhook delivery.
   // Svix signs: "{svix-id}.{svix-timestamp}.{body}" — NOT just the body.
-  // Signature header format: "v1,<base64-hmac-sha256> v1,<base64-hmac-sha256>"
   const msgId = req.headers.get('svix-id')
   const msgTimestamp = req.headers.get('svix-timestamp')
   const msgSignature = req.headers.get('svix-signature')
 
   if (!msgId || !msgTimestamp || !msgSignature) return false
 
+  // Reject requests older than 5 minutes to prevent replay attacks
+  const ts = parseInt(msgTimestamp, 10)
+  if (isNaN(ts) || Math.abs(Date.now() / 1000 - ts) > 300) return false
+
   const signedContent = `${msgId}.${msgTimestamp}.${rawBody}`
   const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64')
-  const computed = createHmac('sha256', secretBytes).update(signedContent).digest('base64')
+  const computed = Buffer.from(
+    `v1,${createHmac('sha256', secretBytes).update(signedContent).digest('base64')}`
+  )
 
-  // Header may contain multiple space-separated "v1,<sig>" tokens
-  return msgSignature.split(' ').some(part => part === `v1,${computed}`)
+  // Use constant-time comparison to prevent timing attacks
+  return msgSignature.split(' ').some(part => {
+    const partBuf = Buffer.from(part)
+    return partBuf.byteLength === computed.byteLength && timingSafeEqual(partBuf, computed)
+  })
 }
 
 // Handles two modes:
@@ -69,8 +77,8 @@ export async function POST(req: Request) {
     const apiKey = process.env.RESEND_API_KEY
     const rawBody = await req.text()
 
-    // Verify Resend webhook signature for inbound webhooks
-    const isWebhook = rawBody.includes('"type"')
+    // Verify Resend webhook signature — svix-id header is authoritative evidence of a Svix delivery
+    const isWebhook = !!req.headers.get('svix-id')
     if (isWebhook && !(await verifyResendSignature(req, rawBody))) {
       console.warn('[email] Invalid webhook signature — request blocked')
       return Response.json({ error: 'Forbidden' }, { status: 403 })
