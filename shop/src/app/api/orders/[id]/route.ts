@@ -23,6 +23,13 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const secret = process.env.ORDER_ADMIN_SECRET
+  if (secret) {
+    const auth = req.headers.get('authorization')?.replace('Bearer ', '')
+    if (auth !== secret) {
+      return Response.json({ data: null, error: 'Unauthorized' }, { status: 403 })
+    }
+  }
   try {
     const { id } = await params
     const body = await req.json() as { status: OrderStatus; notes?: string }

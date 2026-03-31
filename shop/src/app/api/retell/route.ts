@@ -1,7 +1,14 @@
+import { createHmac } from 'crypto'
 import { csContext } from '@/lib/cs-context'
 import type { Message } from '@/lib/cs-context'
 
 export const dynamic = 'force-dynamic'
+
+function verifyRetellSignature(rawBody: string, signature: string | null, secret: string): boolean {
+  if (!signature) return false
+  const expected = createHmac('sha256', secret).update(rawBody).digest('hex')
+  return signature === expected
+}
 
 // Retell Custom LLM webhook
 // Docs: https://docs.retell.ai/custom-llm-websocket
@@ -25,7 +32,13 @@ interface RetellRequest {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json() as RetellRequest
+    const rawBody = await req.text()
+    const secret = process.env.RETELL_WEBHOOK_SECRET
+    if (secret && !verifyRetellSignature(rawBody, req.headers.get('x-retell-signature'), secret)) {
+      console.warn('[retell] Invalid signature — request blocked')
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    const body = JSON.parse(rawBody) as RetellRequest
     console.log('[retell] interaction_type:', body.interaction_type, '| transcript length:', body.transcript?.length ?? 0)
 
     // Retell health check

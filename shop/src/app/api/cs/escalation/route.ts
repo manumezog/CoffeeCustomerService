@@ -2,7 +2,18 @@ import { getEscalations, updateEscalationStatus, createEscalation } from '@/lib/
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+function checkAuth(req: Request): boolean {
+  const secret = process.env.ESCALATION_SECRET
+  if (!secret) return true
+  const auth = req.headers.get('authorization')?.replace('Bearer ', '')
+    ?? req.headers.get('x-escalation-secret')
+  return auth === secret
+}
+
+export async function GET(req: Request) {
+  if (!checkAuth(req)) {
+    return Response.json({ data: null, error: 'Unauthorized' }, { status: 403 })
+  }
   try {
     const escalations = await getEscalations()
     return Response.json({ data: escalations, error: null })
@@ -13,14 +24,9 @@ export async function GET() {
 
 // Called by Retell as a function tool when the agent decides to escalate
 export async function POST(req: Request) {
-  // Simple bearer token check — set ESCALATION_SECRET in Vercel + Retell custom header
-  const secret = process.env.ESCALATION_SECRET
-  if (secret) {
-    const auth = req.headers.get('x-escalation-secret') ?? req.headers.get('authorization')?.replace('Bearer ', '')
-    if (auth !== secret) {
-      console.warn('[escalation] Unauthorized POST blocked')
-      return Response.json({ result: 'Unauthorized' }, { status: 403 })
-    }
+  if (!checkAuth(req)) {
+    console.warn('[escalation] Unauthorized POST blocked')
+    return Response.json({ result: 'Unauthorized' }, { status: 403 })
   }
 
   try {
@@ -56,6 +62,9 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  if (!checkAuth(req)) {
+    return Response.json({ data: null, error: 'Unauthorized' }, { status: 403 })
+  }
   try {
     const body = await req.json() as { id: string; status: 'claimed' | 'resolved' }
     if (!body.id || !body.status) {
