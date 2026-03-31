@@ -63,14 +63,18 @@ export async function POST(req: Request) {
     let email: EmailContent | null = null
 
     if ('type' in body && body.type === 'email.received') {
-      // Resend webhook — use data from payload, fetch body if missing
+      // Resend webhook — always fetch full email to get body text
       const d = body.data
-      let text = d.text
-      if (!text && apiKey) {
+      if (apiKey) {
         const fetched = await fetchEmailContent(d.email_id, apiKey)
-        text = fetched?.text ?? ''
+        email = {
+          from: fetched?.from ?? d.from,
+          subject: fetched?.subject ?? d.subject,
+          text: fetched?.text ?? d.subject, // fall back to subject if no body
+        }
+      } else {
+        email = { from: d.from, subject: d.subject, text: d.subject }
       }
-      email = { from: d.from, subject: d.subject, text: text ?? '' }
     } else {
       // Direct test POST
       const direct = body as DirectTestPayload
