@@ -111,7 +111,7 @@ CustomerService/
 ├── docs/
 │   ├── architecture.md
 │   ├── demo-script.md
-│   └── sierra-alignment.md
+│   └── product-philosophy.md
 └── .github/workflows/           # CI/CD (lint + Vercel deploy)
 ```
 

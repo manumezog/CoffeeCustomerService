@@ -4,17 +4,17 @@ This document provides guidance for working on the Ember & Roast project.
 
 ## Project Context
 
-**What:** A Sierra.AI interview showcase project demonstrating:
-- Multi-agent AI team (Claude Code agents) building an e-commerce platform
-- Professional DevOps (GitHub Actions, Jira, GCP)
+**What:** A demo project showcasing:
+- Multi-agent AI dev team (Claude Code agents) building an e-commerce platform
+- Professional DevOps (GitHub Actions, Jira, Vercel)
 - Voice-first customer service with multi-channel support
 - Cloud infrastructure on Firebase/Firestore
 
-**Why:** Interview preparation for Sierra.AI (agentic customer service company)
+**Why:** Demonstrate voice-first, multi-channel AI customer service with seamless human handoff
 
-**For whom:** Software engineer interviewing at Sierra.AI
+**For whom:** Engineering demo — Ember & Roast specialty coffee shop
 
-**Timeline:** ~13 days for full implementation (currently in Phase 1)
+**Timeline:** ~13 days for full implementation
 
 ## Current Status
 
@@ -125,20 +125,6 @@ Preserves full conversation context in Firestore during handoff."
 - ❌ Don't skip the empathy layer - escalation is the core value prop
 - ❌ Don't skip documentation - explain your thinking
 - ❌ Don't commit incomplete work - each phase should be demo-ready
-
-## Interview Talking Points
-
-When discussing with Sierra:
-
-1. **Architecture**: "Voice is the primary channel, but customers want consistency across chat and email. So I built a unified `cs-context.ts` that all channels call."
-
-2. **Empathy**: "The AI knows its limits and hands off gracefully. When frustration is detected, it doesn't keep trying—it escalates with full context preserved so the customer never repeats themselves."
-
-3. **Team Simulation**: "The 4-agent Claude Code team shows how AI can multiply engineering capacity. The PM defines requirements, designer creates specs, and engineers build—all driven by Claude Code agents."
-
-4. **Professionalism**: "GitHub CI/CD, Jira board, proper infrastructure—this should look like a real product team, not a hobby project."
-
-5. **Voice-First**: "Everything is optimized for voice. The conversational tone, the escalation triggers, the data model—it's all designed with voice interaction as the primary experience."
 
 ## Next Steps (When Ready to Continue)
 
