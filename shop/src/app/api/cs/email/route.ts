@@ -8,11 +8,21 @@ async function verifyResendSignature(req: Request, rawBody: string): Promise<boo
   const secret = process.env.RESEND_WEBHOOK_SECRET
   if (!secret) return true // skip validation if secret not configured
 
-  const signature = req.headers.get('svix-signature') ?? req.headers.get('x-resend-signature')
-  if (!signature) return false
+  // Resend uses Svix for webhook delivery.
+  // Svix signs: "{svix-id}.{svix-timestamp}.{body}" — NOT just the body.
+  // Signature header format: "v1,<base64-hmac-sha256> v1,<base64-hmac-sha256>"
+  const msgId = req.headers.get('svix-id')
+  const msgTimestamp = req.headers.get('svix-timestamp')
+  const msgSignature = req.headers.get('svix-signature')
 
-  const expected = createHmac('sha256', secret).update(rawBody).digest('hex')
-  return signature.includes(expected)
+  if (!msgId || !msgTimestamp || !msgSignature) return false
+
+  const signedContent = `${msgId}.${msgTimestamp}.${rawBody}`
+  const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64')
+  const computed = createHmac('sha256', secretBytes).update(signedContent).digest('base64')
+
+  // Header may contain multiple space-separated "v1,<sig>" tokens
+  return msgSignature.split(' ').some(part => part === `v1,${computed}`)
 }
 
 // Handles two modes:
