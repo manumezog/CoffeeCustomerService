@@ -26,7 +26,8 @@ interface ResendWebhookPayload {
     from: string
     to: string[]
     subject: string
-    text?: string
+    text?: string   // inbound body — present in webhook payload
+    html?: string   // inbound body (HTML variant)
   }
 }
 
@@ -72,24 +73,10 @@ export async function POST(req: Request) {
 
     if ('type' in body && body.type === 'email.received') {
       const d = body.data
-      // Try fetching full email body; fall back to subject as the message
-      let text = d.subject
-      if (apiKey) {
-        try {
-          const res = await fetch(`https://api.resend.com/emails/${d.email_id}`, {
-            headers: { Authorization: `Bearer ${apiKey}` },
-          })
-          if (res.ok) {
-            const fetched = await res.json() as { from?: string; subject?: string; text?: string }
-            text = fetched.text ?? fetched.subject ?? d.subject
-            console.log('[email] fetched body:', text?.slice(0, 100))
-          } else {
-            console.log('[email] fetch failed:', res.status, await res.text())
-          }
-        } catch (e) {
-          console.log('[email] fetch error:', e)
-        }
-      }
+      // Resend inbound webhooks include text/html directly in the payload.
+      // The /emails/{id} endpoint is for outbound emails only — do not use it here.
+      const text = d.text ?? d.subject
+      console.log('[email] inbound body:', text?.slice(0, 100))
       email = { from: d.from, subject: d.subject, text }
     } else {
       // Direct test POST
