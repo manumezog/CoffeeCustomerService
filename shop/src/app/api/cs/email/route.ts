@@ -77,7 +77,7 @@ function buildEmailReply(
     '',
     'Warm regards,',
     'Ember & Roast Customer Care',
-    'support@emberandroast.com',
+    'support@mezapps.com',
     '',
     escalated
       ? 'A member of our team will be in touch shortly with personal attention to your situation.'
