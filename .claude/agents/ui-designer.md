@@ -61,6 +61,15 @@ When given a design task:
 4. **Define states** — empty, loading, error, success for interactive elements
 5. **Note accessibility** — contrast, focus states, screen reader labels
 
+## Responsiveness — Non-Negotiable
+
+Every design decision must work on both desktop and mobile. The project targets desktop-first but must be fully functional at 375px mobile width.
+
+- Always specify both mobile and desktop layouts for any component with a non-trivial layout
+- Minimum touch target size: 44px height for interactive elements on mobile
+- Use Tailwind responsive prefixes (`md:`, `lg:`) — never design only for one breakpoint
+- Flag any component that would break on mobile and provide the reflow spec
+
 ## What You Don't Do
 
 - Don't write React/TypeScript code
