@@ -46,17 +46,22 @@ export async function POST(req: Request) {
 
     // Send reply via Resend
     const apiKey = process.env.RESEND_API_KEY
+    let sendResult = null
+    let sendError = null
     if (apiKey) {
       const resend = new Resend(apiKey)
-      await resend.emails.send({
+      const { data, error } = await resend.emails.send({
         from: 'Ember & Roast Support <onboarding@resend.dev>',
         to: [customerEmail],
         subject: `Re: ${subject}`,
         text: buildEmailReply(result.response, customerName, result.escalationNeeded),
       })
+      sendResult = data
+      sendError = error
+      if (error) console.error('[email] Resend error:', error)
     }
 
-    return Response.json({ data: { sent: !!apiKey, result }, error: null })
+    return Response.json({ data: { sent: !!sendResult, sendError, customerEmail, result }, error: null })
   } catch {
     return Response.json({ data: null, error: 'Failed to process email' }, { status: 500 })
   }
