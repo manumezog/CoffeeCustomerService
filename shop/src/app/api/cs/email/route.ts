@@ -3,16 +3,26 @@ import { csContext } from '@/lib/cs-context'
 
 export const dynamic = 'force-dynamic'
 
-// Inbound email webhook — Resend calls this when a customer emails support@
-// Resend inbound docs: https://resend.com/docs/dashboard/emails/inbound
+// Handles two modes:
+// 1. Resend inbound webhook (email.received event) — body contains { type, data: { email_id } }
+// 2. Direct POST for testing — body contains { from, subject, text }
 
-interface ResendInboundPayload {
+interface ResendWebhookPayload {
+  type: string
+  data: { email_id: string }
+}
+
+interface DirectTestPayload {
   from: string
   to: string[]
   subject: string
   text: string
-  html?: string
-  headers?: Record<string, string>
+}
+
+interface EmailContent {
+  from: string
+  subject: string
+  text: string
 }
 
 function extractOrderId(text: string): string | undefined {
@@ -21,21 +31,47 @@ function extractOrderId(text: string): string | undefined {
 }
 
 function extractSenderName(from: string): string | undefined {
-  // "Alice Johnson <alice@example.com>" → "Alice Johnson"
   const match = from.match(/^(.+?)\s*</)
   return match ? match[1].trim() : undefined
 }
 
+async function fetchEmailContent(emailId: string, apiKey: string): Promise<EmailContent | null> {
+  try {
+    const res = await fetch(`https://api.resend.com/emails/${emailId}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    })
+    if (!res.ok) return null
+    const data = await res.json() as { from: string; subject: string; text: string }
+    return { from: data.from, subject: data.subject, text: data.text }
+  } catch {
+    return null
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json() as ResendInboundPayload
-    const { from, subject, text } = body
+    const apiKey = process.env.RESEND_API_KEY
+    const body = await req.json() as ResendWebhookPayload | DirectTestPayload
 
+    // Determine email content based on payload type
+    let email: EmailContent | null = null
+
+    if ('type' in body && body.type === 'email.received') {
+      // Resend webhook — fetch full email content via API
+      if (!apiKey) return Response.json({ data: null, error: 'Resend not configured' }, { status: 503 })
+      email = await fetchEmailContent(body.data.email_id, apiKey)
+      if (!email) return Response.json({ data: null, error: 'Failed to fetch email content' }, { status: 500 })
+    } else {
+      // Direct test POST
+      const direct = body as DirectTestPayload
+      email = { from: direct.from, subject: direct.subject, text: direct.text }
+    }
+
+    const { from, subject, text } = email
     const customerName = extractSenderName(from)
-    const customerEmail = from.replace(/.*<(.+)>/, '$1').trim()
+    const customerEmail = from.includes('<') ? from.replace(/.*<(.+)>/, '$1').trim() : from.trim()
     const orderId = extractOrderId(subject + ' ' + text)
 
-    // Run through the shared CS brain
     const result = await csContext({
       channel: 'email',
       message: text,
@@ -44,8 +80,6 @@ export async function POST(req: Request) {
       customerEmail,
     })
 
-    // Send reply via Resend
-    const apiKey = process.env.RESEND_API_KEY
     let sendResult = null
     let sendError = null
     if (apiKey) {
@@ -61,8 +95,9 @@ export async function POST(req: Request) {
       if (error) console.error('[email] Resend error:', error)
     }
 
-    return Response.json({ data: { sent: !!sendResult, sendError, customerEmail, result }, error: null })
-  } catch {
+    return Response.json({ data: { sent: !!sendResult, sendError, customerEmail }, error: null })
+  } catch (err) {
+    console.error('[email] ERROR:', err)
     return Response.json({ data: null, error: 'Failed to process email' }, { status: 500 })
   }
 }
