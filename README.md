@@ -178,4 +178,26 @@ Polls Firestore every 5 seconds for open escalations. Shows channel, customer, o
 
 ---
 
+## Roadmap
+
+### Sprint 4 — Stability & CS Polish
+| Story | Priority |
+|-------|----------|
+| EMBER-34: Fix Resend inbound email body fetch | P1 |
+| EMBER-35: Webhook signature validation (Retell + Resend) | P1 |
+| EMBER-36: Fix sentiment negation bug in cs-context.ts | P1 |
+| EMBER-37: UI polish — product cards, hero, Badge component | P2 |
+| EMBER-38: CallButton error handling and retry UX | P2 |
+| EMBER-39: Link escalation to cs-interaction record | P3 |
+
+### Sprint 5 — E-Commerce Core
+| Story | Priority |
+|-------|----------|
+| EMBER-40: Add to cart with localStorage | P1 |
+| EMBER-41: Checkout page + order creation in Firestore | P1 |
+| EMBER-42: Order confirmation email via Resend | P1 |
+| EMBER-43: Mobile nav accessibility (focus trap, keyboard) | P2 |
+
+---
+
 *Built with Next.js, Firebase, Retell.ai, Voiceflow, and Claude Code*
