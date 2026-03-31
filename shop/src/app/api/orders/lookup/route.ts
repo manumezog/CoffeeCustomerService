@@ -1,4 +1,3 @@
-import { createHmac } from 'crypto'
 import { getOrder } from '@/lib/firestore'
 
 export const dynamic = 'force-dynamic'
@@ -41,21 +40,16 @@ async function handleLookup(body: { args?: { order_id?: string } }): Promise<Res
 // Retell function calling endpoint
 export async function POST(req: Request) {
   try {
-    const secret = process.env.RETELL_WEBHOOK_SECRET
-    const rawBody = await req.text()
-
-    if (secret) {
-      const signature = req.headers.get('x-retell-signature')
-      if (!signature) {
-        return Response.json({ result: 'Unauthorized' }, { status: 403 })
-      }
-      const expected = createHmac('sha256', secret).update(rawBody).digest('hex')
-      if (signature !== expected) {
-        console.warn('[order-lookup] Invalid Retell signature')
+    const lookupKey = process.env.LOOKUP_ORDER_KEY
+    if (lookupKey) {
+      const provided = req.headers.get('lookup_order_key')
+      if (provided !== lookupKey) {
+        console.warn('[order-lookup] Invalid lookup_order_key header')
         return Response.json({ result: 'Unauthorized' }, { status: 403 })
       }
     }
 
+    const rawBody = await req.text()
     const body = JSON.parse(rawBody) as { args?: { order_id?: string } }
     return await handleLookup(body)
   } catch (err) {
