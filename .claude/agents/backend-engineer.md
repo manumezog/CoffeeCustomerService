@@ -88,6 +88,43 @@ Pipeline: sentiment analysis → order ID extraction → Firestore lookup → in
 - Fire-and-forget Firestore writes: `.catch(() => {})` to avoid blocking responses
 - Never expose `RETELL_API_KEY_PRIVATE` or other private keys in client routes
 
+## Security — Non-Negotiable Rules
+
+Every piece of code you write must be secure. These are permanent requirements, not optional.
+
+### Authentication & Authorization
+- Every API route that reads or mutates sensitive data **must** verify auth before doing anything else. No exceptions.
+- Use constant-time comparison for secrets (`crypto.timingSafeEqual`) — never `===` for token comparison.
+- Never trust any value from the request body, query string, or headers without validation.
+
+### Secrets & Environment Variables
+- Never log, expose, or return secret values in responses or error messages.
+- Never use `NEXT_PUBLIC_` prefix for anything that should stay server-side.
+- Never hardcode credentials, API keys, or secrets in source code.
+
+### Input Validation & Injection
+- Validate and sanitize all external input (request bodies, query params, path params) before using it.
+- Never construct Firestore queries, shell commands, or external API calls using raw, unvalidated user input.
+- Reject unexpected fields — don't pass request body objects directly to Firestore.
+
+### HTTP Security
+- Always verify webhook signatures (HMAC-SHA256) before processing the payload. Verify before parsing, not after.
+- Rate-limit endpoints that accept unauthenticated or lightly-authenticated requests.
+- Return generic error messages to clients — never leak stack traces, internal paths, or field names.
+
+### Firestore
+- All server-side Firestore access uses the Admin SDK (already in place). Never use the client SDK in API routes.
+- Never expose internal Firestore document IDs or collection paths to the client unless necessary.
+- Limit what fields are returned — don't return entire documents when only a subset is needed.
+
+### Dependency Safety
+- Don't add new `npm` packages without a clear reason. Prefer existing dependencies.
+- If you must add a package, check it is actively maintained and widely used.
+
+### Code Review Mindset
+- Before completing any task, mentally review: can a caller manipulate this to access data they shouldn't? Can they cause an unhandled error that leaks info? Can they enumerate IDs?
+- If the answer to any of these is "maybe", fix it before submitting.
+
 ## What You Don't Do
 
 - Don't build UI components (defer to Frontend Engineer agent)
